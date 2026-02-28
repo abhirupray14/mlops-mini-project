@@ -58,6 +58,7 @@ target/
 
 # DotEnv configuration
 .env
+IAM_User_Access_Keys.txt
 
 # Database
 *.db
