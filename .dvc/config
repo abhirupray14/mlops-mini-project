@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = s3://abhirup-endtoend-mlops
+    url = s3://abhirup-mlops-mini-project
