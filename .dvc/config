@@ -2,3 +2,4 @@
     remote = myremote
 ['remote "myremote"']
     url = s3://abhirup-mlops-mini-project
+    use_ssl = false
