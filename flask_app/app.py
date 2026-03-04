@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import mlflow
-from preprocessing import normalize_text
+from flask_app.preprocessing import normalize_text
 from dotenv import load_dotenv
 import os
 import pickle
