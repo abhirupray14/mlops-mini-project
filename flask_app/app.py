@@ -31,7 +31,7 @@ model_version = 1
 model_uri = f"models:/{model_name}/{model_version}"
 model = mlflow.pyfunc.load_model(model_uri)
 
-vectoriser = pickle.load(open('../models/vectorizer.pkl', 'rb'))
+vectoriser = pickle.load(open('models/vectorizer.pkl', 'rb'))
 
 @app.route('/')
 def home():
@@ -53,4 +53,5 @@ def predict():
 
     return render_template('index.html', result=result[0]) 
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True,host = "0.0.0.0")
