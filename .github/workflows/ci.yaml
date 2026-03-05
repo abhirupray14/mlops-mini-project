@@ -83,3 +83,26 @@ jobs:
             docker run -p 80:5000 --name my-app \
               -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
               ${{ secrets.DOCKER_HUB_USERNAME }}/emotion2:latest
+      - name: Login to AWS ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_accesskey ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 296588716262.dkr.ecr.eu-north-1.amazonaws.com
+      
+      - name: Build Docker image
+        run: |
+          docker build -t emotion2:latest .
+      
+      - name: Tag Docker image
+        run: |
+          docker tag emotion2:latest 296588716262.dkr.ecr.eu-north-1.amazonaws.com/emotion2:latest
+
+      - name: Tag Docker image
+        run: |
+          docker tag emotion2:latest 296588716262.dkr.ecr.eu-north-1.amazonaws.com/emotion2:latest
+
+      - name: Push Docker image to AWS ECR
+        run: |
+          docker push 296588716262.dkr.ecr.eu-north-1.amazonaws.com/emotion2:latest
+      
+       
