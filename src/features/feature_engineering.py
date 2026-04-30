@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import os
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import yaml
 import logging
 import pickle
@@ -76,14 +76,44 @@ def apply_bow(train_data: pd.DataFrame, test_data: pd.DataFrame, max_features: i
 
         pickle.dump(vectorizer, open('models/vectorizer.pkl', 'wb'))
 
-
-
         logger.debug('Bag of Words applied and data transformed')
         return train_df, test_df
     except Exception as e:
         logger.error('Error during Bag of Words transformation: %s', e)
         raise
 
+
+def apply_tfidf(train_data: pd.DataFrame, test_data: pd.DataFrame, max_features: int) -> tuple:
+    """Apply TF-IDF Vectorizer to the data."""
+    try:
+        # Initialize TfidfVectorizer instead of CountVectorizer
+        vectorizer = TfidfVectorizer(max_features=max_features)
+
+        X_train = train_data['content'].values
+        y_train = train_data['sentiment'].values
+        X_test = test_data['content'].values
+        y_test = test_data['sentiment'].values
+
+        # Fit and transform the training data, only transform the test data
+        X_train_tfidf = vectorizer.fit_transform(X_train)
+        X_test_tfidf = vectorizer.transform(X_test)
+
+        # Convert the sparse matrix to a dense DataFrame
+        train_df = pd.DataFrame(X_train_tfidf.toarray())
+        train_df['label'] = y_train
+
+        test_df = pd.DataFrame(X_test_tfidf.toarray())
+        test_df['label'] = y_test
+
+        # Save the vectorizer for future inference
+        pickle.dump(vectorizer, open('models/vectorizer.pkl', 'wb'))
+
+        logger.debug('TF-IDF applied and data transformed')
+        return train_df, test_df
+        
+    except Exception as e:
+        logger.error('Error during TF-IDF transformation: %s', e)
+        raise
 def save_data(df: pd.DataFrame, file_path: str) -> None:
     """Save the dataframe to a CSV file."""
     try:
@@ -102,10 +132,10 @@ def main():
         train_data = load_data('./data/interim/train_processed.csv')
         test_data = load_data('./data/interim/test_processed.csv')
 
-        train_df, test_df = apply_bow(train_data, test_data, max_features)
+        train_df, test_df = apply_tfidf(train_data, test_data, max_features)
 
-        save_data(train_df, os.path.join("./data", "processed", "train_bow.csv"))
-        save_data(test_df, os.path.join("./data", "processed", "test_bow.csv"))
+        save_data(train_df, os.path.join("./data", "processed", "train_tfidf.csv"))
+        save_data(test_df, os.path.join("./data", "processed", "test_tfidf.csv"))
     except Exception as e:
         logger.error('Failed to complete the feature engineering process: %s', e)
         print(f"Error: {e}")
